@@ -14,17 +14,28 @@
 
 char *get_next_line(int fd)
 {
-	char *buf;
-   
-	buf	= calloc(sizeof(*buf), BUFFER_SIZE + 1);
-	while (read(fd, buf, BUFFER_SIZE);
+	char		*next_buf;
+	char		*buf;
+	static char	*sbuf;
+	char		*temp;
+	int		nli;
+
+	next_buf = malloc(BUFFER_SIZE);
+	buf = sbuf;
+	while (read(fd, next_buf, BUFFER_SIZE))
 	{
-		if (ft_strchr(buf, '\n'))
+		temp = ft_strjoin(buf, next_buf);
+		free(buf);
+		buf = temp;
+		nli = ft_strchr(buf, '\n');
+		if (nli >= 0)
 		{
-			
+			sbuf = ft_substr(buf, nli, BUFFER_SIZE - nli);
+			temp = ft_substr(buf, 0, nli + 1);
+			free(buf);
+			return (temp);
 		}
 	}
-	return (i);
 }
 
 #include <stdio.h>
@@ -36,6 +47,6 @@ int main(void)
 	int fd;
 
 	fd = open("test.txt", 0);
-	printf("%s\n", get_netxt_line(fd));
+	printf("%s\n", get_next_line(fd));
 	return (0);
 }

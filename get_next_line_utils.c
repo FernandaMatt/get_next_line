@@ -42,8 +42,12 @@ char	*ft_strjoin(char const *s1, char const *s2)
 {
 	char	*newstr;
 
-	if (!s1 || !s2)
+	if (!s1 && !s2)
 		return (NULL);
+	if (!s1)
+		return (ft_strdup(s2));
+	if (!s2)
+		return (ft_strdup(s1));
 	newstr = malloc(ft_strlen((char *)s1) + ft_strlen((char *)s2) + 1);
 	if (!newstr)
 		return (newstr);
@@ -52,17 +56,52 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (newstr);
 }
 
-char	*ft_strchr(const char *s, int c)
+char    *ft_substr(char const *s, unsigned int start, size_t len)
 {
-	while (*s)
+	char    *substr;
+
+	if (start >= ft_strlen(s))
+		return(ft_strdup(""));
+	substr = malloc((len+1)*sizeof(*s));
+	if (substr == NULL)
+		return (NULL);
+	ft_strlcpy(substr, &s[start], len+1);
+	return (substr);
+}
+
+char    *ft_strdup(const char *src)
+{
+        char	*ret;
+        int	c;
+
+	c = ft_strlen(src) + 1;
+	ret = malloc(c * sizeof(*ret));
+	if (!ret)
+		return (ret);
+	c = 0;
+	while (src[c])
 	{
-		if ((char)c == *s)
-			return ((char *)s);
-		s++;
+		ret[c] = src[c];
+		c++;
 	}
-	if ((char)c == *s)
-		return ((char *)s);
-	return (NULL);
+	ret[c] = 0;
+	return (ret);
+}
+
+int	ft_strchr(const char *s, int c)
+{
+	int	i;
+
+	i = 0;
+	while (s[i])
+	{
+		if ((char)c == s[i])
+			return (i);
+		i++;
+	}
+	if ((char)c == s[i])
+		return (i);
+	return (-1);
 }
 
 void	*ft_calloc(size_t count, size_t size)
