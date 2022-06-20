@@ -38,24 +38,6 @@ size_t	ft_strlcpy(char *dest, const char *src, size_t destsize)
 	return (ft_strlen((char *)src));
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
-{
-	char	*newstr;
-
-	if (!s1 && !s2)
-		return (NULL);
-	if (!s1)
-		return (ft_strdup(s2));
-	if (!s2)
-		return (ft_strdup(s1));
-	newstr = malloc(ft_strlen((char *)s1) + ft_strlen((char *)s2) + 1);
-	if (!newstr)
-		return (newstr);
-	ft_strlcpy(newstr, s1, ft_strlen(s1) + 1);
-	ft_strlcpy(newstr + ft_strlen(s1), s2, ft_strlen((char *)s2) + 1);
-	return (newstr);
-}
-
 char    *ft_substr(char const *s, unsigned int start, size_t len)
 {
 	char    *substr;
@@ -92,6 +74,8 @@ int	ft_strchr(const char *s, int c)
 {
 	int	i;
 
+	if (!s)
+		return (-1);
 	i = 0;
 	while (s[i])
 	{

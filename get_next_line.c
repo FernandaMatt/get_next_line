@@ -6,13 +6,13 @@
 /*   By: fcaetano <fernandacunha@id.uff.br>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 11:05:12 by fcaetano          #+#    #+#             */
-/*   Updated: 2022/06/20 14:45:02 by fcaetano         ###   ########.fr       */
+/*   Updated: 2022/06/20 16:44:31 by fcaetano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 //#include "get_next_line.h"
 
-#define BUFFER_SIZE 1
+#define BUFFER_SIZE 142
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -50,24 +50,6 @@ size_t	ft_strlcpy(char *dest, const char *src, size_t destsize)
 	}
 	dest[i] = 0;
 	return (ft_strlen((char *)src));
-}
-
-char	*ft_strjoin(char const *s1, char const *s2)
-{
-	char	*newstr;
-
-	if (!s1 && !s2)
-		return (NULL);
-	if (!s1)
-		return (ft_strdup(s2));
-	if (!s2)
-		return (ft_strdup(s1));
-	newstr = malloc(ft_strlen((char *)s1) + ft_strlen((char *)s2) + 1);
-	if (!newstr)
-		return (newstr);
-	ft_strlcpy(newstr, s1, ft_strlen(s1) + 1);
-	ft_strlcpy(newstr + ft_strlen(s1), s2, ft_strlen((char *)s2) + 1);
-	return (newstr);
 }
 
 char    *ft_substr(char const *s, unsigned int start, size_t len)
@@ -120,6 +102,24 @@ int	ft_strchr(const char *s, int c)
 	return (-1);
 }
 
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	char	*newstr;
+
+	if (!s1 && !s2)
+		return (NULL);
+	if (!s1)
+		return (ft_strdup(s2));
+	if (!s2)
+		return (ft_strdup(s1));
+	newstr = malloc(ft_strlen((char *)s1) + ft_strlen((char *)s2) + 1);
+	if (!newstr)
+		return (newstr);
+	ft_strlcpy(newstr, s1, ft_strlen(s1) + 1);
+	ft_strlcpy(newstr + ft_strlen(s1), s2, ft_strlen((char *)s2) + 1);
+	return (newstr);
+}
+
 char *get_next_line(int fd)
 {
 	char		*next_buf;
@@ -167,6 +167,7 @@ char *get_next_line(int fd)
 }
 
 #include <fcntl.h>
+//#include <stdio.h>
 int main(void)
 {
 	int 	fd;
