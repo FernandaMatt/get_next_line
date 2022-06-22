@@ -12,7 +12,7 @@
 
 //#include "get_next_line.h"
 
-#define BUFFER_SIZE 142
+#define BUFFER_SIZE 55542
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -21,8 +21,8 @@ char	*get_next_line(int fd);
 char    *ft_substr(char const *s, unsigned int start, size_t len);
 size_t	ft_strlen(const char *str);
 size_t	ft_strlcpy(char *dest, const char *src, size_t destsize);
-char	*ft_strjoin(char const *s1, char const *s2);
-int	ft_strchr(const char *s, int c);
+char	*ft_strjoin(char *s1, char const *s2);
+int		ft_strchr(const char *s, int c);
 void	*ft_calloc(size_t count, size_t size);
 char	*ft_strdup(const char *src);
 
@@ -65,10 +65,10 @@ char    *ft_substr(char const *s, unsigned int start, size_t len)
 	return (substr);
 }
 
-char    *ft_strdup(const char *src)
+char	*ft_strdup(const char *src)
 {
-        char	*ret;
-        int	c;
+	char	*ret;
+	int	c;
 
 	c = ft_strlen(src) + 1;
 	ret = malloc(c * sizeof(*ret));
@@ -102,7 +102,7 @@ int	ft_strchr(const char *s, int c)
 	return (-1);
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char *s1, char const *s2)
 {
 	char	*newstr;
 
@@ -120,6 +120,20 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (newstr);
 }
 
+void	*ft_calloc(size_t count, size_t size)
+{
+		void *ptr;
+		int i;
+
+		ptr = malloc(count*size);
+		if (ptr == NULL)
+				return (ptr);
+		i = count * size - 1;
+		while (i >= 0)
+				((char *)ptr)[i--] = 0;
+		return (ptr);
+}
+
 char *get_next_line(int fd)
 {
 	char		*next_buf;
@@ -127,8 +141,10 @@ char *get_next_line(int fd)
 	static char	*sbuf;
 	char		*temp;
 	int			nli;
+	int			nread;
 
-	next_buf = malloc(BUFFER_SIZE);
+	nread = 0;
+	next_buf = ft_calloc(BUFFER_SIZE + 1, sizeof(*next_buf));
 	buf = sbuf;
 	nli = ft_strchr(buf, '\n');
 	if (nli >= 0)
@@ -141,6 +157,7 @@ char *get_next_line(int fd)
 	}
 	while (read(fd, next_buf, BUFFER_SIZE))
 	{
+		nread++;
 		temp = ft_strjoin(buf, next_buf);
 		if(buf)
 			free(buf);
@@ -155,7 +172,7 @@ char *get_next_line(int fd)
 			return (temp);
 		}
 	}
-	if(buf)
+	if(nread)
 	{
 		temp = buf;
 		free(next_buf);
@@ -165,6 +182,8 @@ char *get_next_line(int fd)
 	}
 	return (0);
 }
+
+//ta dando leak no final, nao estou dando free em sbyf quando nao caio no último if ? como verifricar se a leitura acabou para dar free? sempre q sbuf forr vazio, dar free ? independente da chamada? pq de fato nao tem pq concatenar algo vazio....
 
 #include <fcntl.h>
 //#include <stdio.h>
@@ -179,7 +198,9 @@ int main(void)
 	while (line)
 	{	
 		printf("%s\n", line);
+		free(line);
 		line = get_next_line(fd);
 	}
+	free(line);
 	return (0);
 }
