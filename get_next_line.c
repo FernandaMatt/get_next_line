@@ -12,7 +12,7 @@
 
 //#include "get_next_line.h"
 
-#define BUFFER_SIZE 55542
+#define BUFFER_SIZE 187243659
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -30,6 +30,8 @@ size_t	ft_strlen(const char *str)
 {
 	size_t	n;
 
+	if (!str)
+		return (0);
 	n = 0;
 	while (str[n])
 		n++;
@@ -141,23 +143,33 @@ char *get_next_line(int fd)
 	static char	*sbuf;
 	char		*temp;
 	int			nli;
-	int			nread;
+	int			bread;
 
-	nread = 0;
-	next_buf = ft_calloc(BUFFER_SIZE + 1, sizeof(*next_buf));
 	buf = sbuf;
 	nli = ft_strchr(buf, '\n');
 	if (nli >= 0)
 	{
 		sbuf = ft_strdup(buf + nli + 1);
+		if (!ft_strlen(sbuf))
+			{
+				free(sbuf);
+				sbuf = 0;
+			}
 		temp = ft_substr(buf, 0, nli + 1);
 		free(buf);
-		free(next_buf);
 		return (temp);
 	}
-	while (read(fd, next_buf, BUFFER_SIZE))
+	next_buf = ft_calloc(BUFFER_SIZE + 1, sizeof(*next_buf));
+	bread = read(fd, next_buf, BUFFER_SIZE);
+	if (!bread && !ft_strlen(buf))
 	{
-		nread++;
+		free(sbuf);
+		free(next_buf);
+		return (0);
+	}
+	while (bread)
+	{
+		next_buf[bread] = 0;
 		temp = ft_strjoin(buf, next_buf);
 		if(buf)
 			free(buf);
@@ -171,22 +183,19 @@ char *get_next_line(int fd)
 			free(next_buf);
 			return (temp);
 		}
+		bread = read(fd, next_buf, BUFFER_SIZE);
 	}
-	if(nread)
+	if(buf)
 	{
 		temp = buf;
 		free(next_buf);
-		next_buf = 0;
 		sbuf = 0;
 		return (temp);
 	}
 	return (0);
 }
 
-//ta dando leak no final, nao estou dando free em sbyf quando nao caio no último if ? como verifricar se a leitura acabou para dar free? sempre q sbuf forr vazio, dar free ? independente da chamada? pq de fato nao tem pq concatenar algo vazio....
-
 #include <fcntl.h>
-//#include <stdio.h>
 int main(void)
 {
 	int 	fd;
