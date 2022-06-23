@@ -12,7 +12,7 @@
 
 //#include "get_next_line.h"
 
-#define BUFFER_SIZE 187243659
+//#define BUFFER_SIZE 42
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -136,6 +136,19 @@ void	*ft_calloc(size_t count, size_t size)
 		return (ptr);
 }
 
+/* char	*check_readbytes(char *buf)
+{
+	int nli;
+	char *temp;
+	static char	*sbuf;
+
+	if (buf)
+	{
+		temp = sbuf;
+		sbuf = ft_strjoin()
+	}
+} */
+
 char *get_next_line(int fd)
 {
 	char		*next_buf;
@@ -145,23 +158,25 @@ char *get_next_line(int fd)
 	int			nli;
 	int			bread;
 
+	if (fd < 0)
+		return (0);
 	buf = sbuf;
-	nli = ft_strchr(buf, '\n');
+	nli = ft_strchr(sbuf, '\n');
 	if (nli >= 0)
 	{
+		temp = ft_substr(buf, 0, nli + 1);
 		sbuf = ft_strdup(buf + nli + 1);
 		if (!ft_strlen(sbuf))
 			{
 				free(sbuf);
 				sbuf = 0;
 			}
-		temp = ft_substr(buf, 0, nli + 1);
 		free(buf);
 		return (temp);
 	}
 	next_buf = ft_calloc(BUFFER_SIZE + 1, sizeof(*next_buf));
 	bread = read(fd, next_buf, BUFFER_SIZE);
-	if (!bread && !ft_strlen(buf))
+	if (bread <= 0 && !ft_strlen(buf))
 	{
 		free(sbuf);
 		free(next_buf);
@@ -195,7 +210,7 @@ char *get_next_line(int fd)
 	return (0);
 }
 
-#include <fcntl.h>
+/* #include <fcntl.h>
 int main(void)
 {
 	int 	fd;
@@ -212,4 +227,4 @@ int main(void)
 	}
 	free(line);
 	return (0);
-}
+} */
