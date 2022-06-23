@@ -23,7 +23,6 @@ size_t	ft_strlen(const char *str);
 size_t	ft_strlcpy(char *dest, const char *src, size_t destsize);
 char	*ft_strjoin(char *s1, char const *s2);
 int		ft_strchr(const char *s, int c);
-void	*ft_calloc(size_t count, size_t size);
 char	*ft_strdup(const char *src);
 
 size_t	ft_strlen(const char *str)
@@ -122,20 +121,6 @@ char	*ft_strjoin(char *s1, char const *s2)
 	return (newstr);
 }
 
-void	*ft_calloc(size_t count, size_t size)
-{
-		void *ptr;
-		int i;
-
-		ptr = malloc(count*size);
-		if (ptr == NULL)
-				return (ptr);
-		i = count * size - 1;
-		while (i >= 0)
-				((char *)ptr)[i--] = 0;
-		return (ptr);
-}
-
 /* char	*check_readbytes(char *buf)
 {
 	int nli;
@@ -174,7 +159,7 @@ char *get_next_line(int fd)
 		free(buf);
 		return (temp);
 	}
-	next_buf = ft_calloc(BUFFER_SIZE + 1, sizeof(*next_buf));
+	next_buf = malloc(BUFFER_SIZE + 1 * sizeof(*next_buf));
 	bread = read(fd, next_buf, BUFFER_SIZE);
 	if (bread <= 0 && !ft_strlen(buf))
 	{
