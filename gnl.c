@@ -1,6 +1,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <fcntl.h>
+
+#define BUFFER_SIZE 100000000
 
 size_t	ft_strlen(const char *str)
 {
@@ -14,7 +17,7 @@ size_t	ft_strlen(const char *str)
 	return (n);
 }
 
-char	*ft_strdup(const char *src)
+char	*ft_strdup(char *src)
 {
 	char	*ret;
 	int	c;
@@ -49,6 +52,19 @@ size_t	ft_strlcpy(char *dest, const char *src, size_t destsize)
 	return (ft_strlen((char *)src));
 }
 
+/* char    *ft_substr(char const *s, unsigned int start, size_t len)
+{
+	char    *substr;
+
+	if (start >= ft_strlen(s))
+		return(ft_strdup(""));
+	substr = malloc((len+1)*sizeof(*s));
+	if (substr == NULL)
+		return (NULL);
+	ft_strlcpy(substr, &s[start], len+1);
+	return (substr);
+} */
+
 char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*newstr;
@@ -65,22 +81,116 @@ char	*ft_strjoin(char *s1, char *s2)
 		return (newstr);
 	ft_strlcpy(newstr, s1, ft_strlen(s1) + 1);
 	ft_strlcpy(newstr + ft_strlen(s1), s2, ft_strlen((char *)s2) + 1);
+	free(s1);
+	free(s2);
 	return (newstr);
+}
+
+int	ft_strchr(const char *s, int c)
+{
+	int	i;
+
+	if (!s)
+		return (-1);
+	i = 0;
+	while (s[i])
+	{
+		if ((char)c == s[i])
+			return (i);
+		i++;
+	}
+	if ((char)c == s[i])
+		return (i);
+	return (-1);
+}
+
+char	*ft_read(int fd)
+{
+	int		bread;
+	char	*readbuf;
+
+	readbuf = malloc(BUFFER_SIZE + 1 * sizeof(*readbuf));
+	if (!readbuf)
+		return (readbuf);
+	bread = read(fd, readbuf, BUFFER_SIZE);
+	readbuf[bread] = 0;
+	if (bread == 0)
+	{
+		free(readbuf);
+		return (ft_strdup(""));
+	}
+	if (bread < 0)
+	{
+		free(readbuf);
+		return (0);
+	}
+	else
+		return (readbuf);
+}
+
+char	*ft_checkbread(char *sbuf, char *line)
+{
+	int		nli;
+	char	*temp;
+
+	if (!sbuf)
+		return (0);
+	nli = ft_strchr(sbuf, '\n');
+	if (nli < 0) //do i needd this line?
+		return (0); //do i needd this line?
+	else //do i needd this line?
+	{
+		ft_strlcpy(line, sbuf, nli + 2);
+		temp = sbuf;
+		sbuf = ft_strdup(sbuf + nli + 1);
+		if (temp)
+			free(temp);
+		return (sbuf);
+	}
+}
+
+char	*get_next_line(int fd)
+{
+	static char	*sbuf;
+	char		*temp;
+	char		*line;
+
+	while (1)
+	{
+		if (ft_strchr(sbuf, '\n') > 0)
+		{
+			line = malloc((ft_strchr(sbuf, '\n') + 2) * sizeof(*line));
+			sbuf = ft_checkbread(sbuf, line);
+			return (line);
+		}
+		temp = ft_read(fd);
+		if (temp == 0 || ft_strlen(temp) == 0)
+		{
+			sbuf = ft_strjoin(sbuf, temp);
+			if	(ft_strlen(sbuf) > 0)
+				return (sbuf);
+			free(sbuf);
+			return (0);
+		}
+		sbuf = ft_strjoin(sbuf, temp);
+	}
 }
 
 int main(void)
 {
 	int 	fd;
-	char* s1;
-	char* s2;
-	char* sr;
+	char	*line;
+	// int		i = 7;
 
-	s1 = ft_strdup("teste");
-	s2 = ft_strdup(" teste");
-	sr = ft_strjoin(s1, s2);
-	printf ("%s", sr);
-	free(sr);
-	free(s1);
-	free(s2);
-	return (0);	
+	fd = open("test.txt", 0);
+	
+	line = get_next_line(fd);
+	while (line)
+	{	
+		printf("%s\n", line);
+		free(line);
+		line = get_next_line(fd);
+	}
+	free(line);
+	return (0);
 }
