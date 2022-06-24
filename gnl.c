@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <fcntl.h>
 
-#define BUFFER_SIZE 100000000
-
 size_t	ft_strlen(const char *str)
 {
 	size_t	n;
@@ -149,6 +147,24 @@ char	*ft_checkbread(char *sbuf, char *line)
 	}
 }
 
+char	*check_EOF(char *sbuf,char *temp)
+{
+	if (temp == 0)
+	{
+		if (sbuf)
+			free(sbuf);
+		return (0);
+	}
+	if (ft_strlen(sbuf) > 0)
+	{
+		free(temp);
+		return (sbuf);
+	}
+	free(temp);
+	free(sbuf);
+	return (0);
+}
+
 char	*get_next_line(int fd)
 {
 	static char	*sbuf;
@@ -164,14 +180,20 @@ char	*get_next_line(int fd)
 			return (line);
 		}
 		temp = ft_read(fd);
-		if (temp == 0 || ft_strlen(temp) == 0)
+		if (ft_strlen(temp) == 0)
+		{
+			line = check_EOF(sbuf, temp);
+			sbuf = 0;
+			return (line);
+		}
+/* 		if (temp == 0 || ft_strlen(temp) == 0)
 		{
 			sbuf = ft_strjoin(sbuf, temp);
 			if	(ft_strlen(sbuf) > 0)
 				return (sbuf);
 			free(sbuf);
 			return (0);
-		}
+		} */
 		sbuf = ft_strjoin(sbuf, temp);
 	}
 }
