@@ -1,29 +1,9 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fcaetano <fernandacunha@id.uff.br>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/06/15 11:05:12 by fcaetano          #+#    #+#             */
-/*   Updated: 2022/06/20 16:44:31 by fcaetano         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-//#include "get_next_line.h"
-
-//#define BUFFER_SIZE 42
-#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <fcntl.h>
 
-char	*get_next_line(int fd);
-char    *ft_substr(char const *s, unsigned int start, size_t len);
-size_t	ft_strlen(const char *str);
-size_t	ft_strlcpy(char *dest, const char *src, size_t destsize);
-char	*ft_strjoin(char *s1, char const *s2);
-int		ft_strchr(const char *s, int c);
-char	*ft_strdup(const char *src);
+// #define BUFFER_SIZE 42
 
 size_t	ft_strlen(const char *str)
 {
@@ -35,6 +15,25 @@ size_t	ft_strlen(const char *str)
 	while (str[n])
 		n++;
 	return (n);
+}
+
+char	*ft_strdup(char *src)
+{
+	char	*ret;
+	int	c;
+
+	c = ft_strlen(src) + 1;
+	ret = malloc(c * sizeof(*ret));
+	if (!ret)
+		return (ret);
+	c = 0;
+	while (src[c])
+	{
+		ret[c] = src[c];
+		c++;
+	}
+	ret[c] = 0;
+	return (ret);
 }
 
 size_t	ft_strlcpy(char *dest, const char *src, size_t destsize)
@@ -53,7 +52,7 @@ size_t	ft_strlcpy(char *dest, const char *src, size_t destsize)
 	return (ft_strlen((char *)src));
 }
 
-char    *ft_substr(char const *s, unsigned int start, size_t len)
+/* char    *ft_substr(char const *s, unsigned int start, size_t len)
 {
 	char    *substr;
 
@@ -64,25 +63,26 @@ char    *ft_substr(char const *s, unsigned int start, size_t len)
 		return (NULL);
 	ft_strlcpy(substr, &s[start], len+1);
 	return (substr);
-}
+} */
 
-char	*ft_strdup(const char *src)
+char	*ft_strjoin(char *s1, char *s2)
 {
-	char	*ret;
-	int	c;
+	char	*newstr;
 
-	c = ft_strlen(src) + 1;
-	ret = malloc(c * sizeof(*ret));
-	if (!ret)
-		return (ret);
-	c = 0;
-	while (src[c])
-	{
-		ret[c] = src[c];
-		c++;
-	}
-	ret[c] = 0;
-	return (ret);
+	if (!s1 && !s2)
+		return (NULL);
+	if (!s1)
+		return (s2);
+	if (!s2)
+		return (s1);
+	newstr = malloc(ft_strlen((char *)s1) + ft_strlen((char *)s2) + 1);
+	if (!newstr)
+		return (newstr);
+	ft_strlcpy(newstr, s1, ft_strlen(s1) + 1);
+	ft_strlcpy(newstr + ft_strlen(s1), s2, ft_strlen((char *)s2) + 1);
+	free(s1);
+	free(s2);
+	return (newstr);
 }
 
 int	ft_strchr(const char *s, int c)
@@ -103,103 +103,107 @@ int	ft_strchr(const char *s, int c)
 	return (-1);
 }
 
-char	*ft_strjoin(char *s1, char const *s2)
+char	*ft_read(int fd)
 {
-	char	*newstr;
+	int		bread;
+	char	*readbuf;
 
-	if (!s1 && !s2)
-		return (NULL);
-	if (!s1)
-		return (ft_strdup(s2));
-	if (!s2)
-		return (ft_strdup(s1));
-	newstr = malloc(ft_strlen((char *)s1) + ft_strlen((char *)s2) + 1);
-	if (!newstr)
-		return (newstr);
-	ft_strlcpy(newstr, s1, ft_strlen(s1) + 1);
-	ft_strlcpy(newstr + ft_strlen(s1), s2, ft_strlen((char *)s2) + 1);
-	return (newstr);
+	readbuf = malloc(BUFFER_SIZE + 1 * sizeof(*readbuf));
+	if (!readbuf)
+		return (readbuf);
+	bread = read(fd, readbuf, BUFFER_SIZE);
+	readbuf[bread] = 0;
+	if (bread == 0)
+	{
+		free(readbuf);
+		return (ft_strdup(""));
+	}
+	if (bread < 0)
+	{
+		free(readbuf);
+		return (0);
+	}
+	else
+		return (readbuf);
 }
 
-/* char	*check_readbytes(char *buf)
+char	*ft_checkbread(char *sbuf, char *line)
 {
-	int nli;
-	char *temp;
-	static char	*sbuf;
+	int		nli;
+	char	*temp;
 
-	if (buf)
-	{
-		temp = sbuf;
-		sbuf = ft_strjoin()
-	}
-} */
-
-char *get_next_line(int fd)
-{
-	char		*next_buf;
-	char		*buf;
-	static char	*sbuf;
-	char		*temp;
-	int			nli;
-	int			bread;
-
-	if (fd < 0)
+	if (!sbuf)
 		return (0);
-	buf = sbuf;
 	nli = ft_strchr(sbuf, '\n');
-	if (nli >= 0)
+	if (nli < 0) //do i needd this line?
+		return (0); //do i needd this line?
+	else //do i needd this line?
 	{
-		temp = ft_substr(buf, 0, nli + 1);
-		sbuf = ft_strdup(buf + nli + 1);
-		if (!ft_strlen(sbuf))
-			{
-				free(sbuf);
-				sbuf = 0;
-			}
-		free(buf);
-		return (temp);
+		ft_strlcpy(line, sbuf, nli + 2);
+		temp = sbuf;
+		sbuf = ft_strdup(sbuf + nli + 1);
+		if (temp)
+			free(temp);
+		return (sbuf);
 	}
-	next_buf = malloc(BUFFER_SIZE + 1 * sizeof(*next_buf));
-	bread = read(fd, next_buf, BUFFER_SIZE);
-	if (bread <= 0 && !ft_strlen(buf))
+}
+
+char	*check_EOF(char *sbuf,char *temp)
+{
+	if (temp == 0)
 	{
-		free(sbuf);
-		free(next_buf);
+		if (sbuf)
+			free(sbuf);
 		return (0);
 	}
-	while (bread)
+	if (ft_strlen(sbuf) > 0)
 	{
-		next_buf[bread] = 0;
-		temp = ft_strjoin(buf, next_buf);
-		if(buf)
-			free(buf);
-		buf = temp;
-		nli = ft_strchr(buf, '\n');
-		if (nli >= 0)
-		{
-			sbuf = ft_strdup(buf + nli + 1);
-			temp = ft_substr(buf, 0, nli + 1);
-			free(buf);
-			free(next_buf);
-			return (temp);
-		}
-		bread = read(fd, next_buf, BUFFER_SIZE);
+		free(temp);
+		return (sbuf);
 	}
-	if(buf)
-	{
-		temp = buf;
-		free(next_buf);
-		sbuf = 0;
-		return (temp);
-	}
+	free(temp);
+	free(sbuf);
 	return (0);
 }
 
-/* #include <fcntl.h>
-int main(void)
+char	*get_next_line(int fd)
+{
+	static char	*sbuf;
+	char		*temp;
+	char		*line;
+
+	while (1)
+	{
+		if (ft_strchr(sbuf, '\n') >= 0)
+		{
+			line = malloc((ft_strchr(sbuf, '\n') + 2) * sizeof(*line));
+			sbuf = ft_checkbread(sbuf, line);
+			return (line);
+		}
+		temp = ft_read(fd);
+		if (ft_strlen(temp) == 0)
+		{
+			line = check_EOF(sbuf, temp);
+			sbuf = 0;
+			return (line);
+		}
+/* 		if (temp == 0 || ft_strlen(temp) == 0)
+		{
+			sbuf = ft_strjoin(sbuf, temp);
+			if	(ft_strlen(sbuf) > 0)
+				return (sbuf);
+			free(sbuf);
+			return (0);
+		} */
+		sbuf = ft_strjoin(sbuf, temp);
+	}
+}
+
+/* int main(void)
 {
 	int 	fd;
 	char	*line;
+	// int		i = 7;
 
 	fd = open("test.txt", 0);
 	
