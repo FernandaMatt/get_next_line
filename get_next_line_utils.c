@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "get_next_line.h"
 
 size_t	ft_strlen(const char *str)
@@ -28,7 +27,7 @@ size_t	ft_strlen(const char *str)
 char	*ft_strdup(char *src)
 {
 	char	*ret;
-	int	c;
+	int		c;
 
 	c = ft_strlen(src) + 1;
 	ret = malloc(c * sizeof(*ret));
