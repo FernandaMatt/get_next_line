@@ -16,12 +16,14 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-char	*get_next_line(int fd);
-char    *ft_substr(char const *s, unsigned int start, size_t len);
 size_t	ft_strlen(const char *str);
+char	*ft_strdup(char *src);
 size_t	ft_strlcpy(char *dest, const char *src, size_t destsize);
-char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strjoin(char *s1, char *s2);
 int		ft_strchr(const char *s, int c);
-char	*ft_strdup(const char *src);
+char	*ft_read(int fd);
+char	*check_bread(char *sbuf, char *line, int nli);
+char	*check_EOF(char *sbuf,char *temp);
+char	*get_next_line(int fd);
 
 #endif
